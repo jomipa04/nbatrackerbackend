@@ -34,6 +34,20 @@ def getMe(request):
     # return Response({"hello":"Hello world"})
     return Response(response_data,status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def getArchive(request):
+    games = Games.objects.all()
+    games_data=GamesSerializer(games, many=True).data
+    if len(games_data)==0:
+        return Response({"data":{"message":"No games yet"}},status=status.HTTP_200_OK)
+    response_data = {"data":{
+        "games": games_data,
+        }}
+    # return Response({"hello":"Hello world"})
+    return Response(response_data,status=status.HTTP_200_OK)
+
+
+
 @api_view(['POST'])
 def postMe(request):
     serializer = GamesSerializer(data=request.data)
@@ -50,7 +64,10 @@ def postMe(request):
 def getMichaelStats(request):
     games = Games.objects.all()
     games_data = GamesSerializer(games, many=True).data
-
+    lastTen = games.order_by('-id')[:10]
+    lastTen_data =GamesSerializer(lastTen, many=True).data
+    if len(games_data)==0:
+        return Response({"data":{"message":"No games yet"}},status=status.HTTP_200_OK)
     numOfGames = len(games_data)
     numOfWins = len([x for x in games_data if x['winner']=='JM'])
     
@@ -88,22 +105,39 @@ def getMichaelStats(request):
     def numQuit():
         quit_count=0
         for x in games_data:
-            if x['quit']:
+            if x['quit'] and x['winner']=='GD':
                 quit_count+=1
 
         return quit_count
+ 
+    # Check best streak
+    def bestStreak():
+        bestStreak=0
+        currStreak=0
+        if len(games_data)==1 and games_data[0]['winner']=='JM':
+            bestStreak=1
+            return bestStreak
+        for x in games_data:
+            if x['winner']=='JM':
+                currStreak+=1
+            else:
+                bestStreak=max([bestStreak, currStreak])
+                currStreak =0
+        return bestStreak
+
     response_data = {"data":{
         
         "numOfGames": numOfGames,
         "numOfWins":numOfWins,
-        "streak": checkStreak(),
-        "mostUsed":mostUsed(),
-        "aveDiff": getAveDiff(),
-        "maxPosDiff":maxPosDiff(),
-        "maxNegDiff":maxNegDiff(),
+        "currentStreak": checkStreak(),
+        "bestStreak": bestStreak(),
+        "mostUsedTeam":mostUsed(),
+        "averageDiff": getAveDiff(),
+        "maxPositiveDiff":maxPosDiff(),
+        "maxNegativeDiff":maxNegDiff(),
         "totalDiff":getTotalDiff(),
         "numQuit":numQuit(),
-        "games":reversed(games_data),
+        "games":lastTen_data,
     }}
     return Response(response_data, status=status.HTTP_200_OK)
 
@@ -111,7 +145,10 @@ def getMichaelStats(request):
 def getGeoStats(request):
     games = Games.objects.all()
     games_data = GamesSerializer(games, many=True).data
-
+    lastTen = games.order_by('-id')[:10]
+    lastTen_data =GamesSerializer(lastTen, many=True).data
+    if len(games_data)==0:
+        return Response({"data":{"message":"No games yet"}},status=status.HTTP_200_OK)
     numOfGames = len(games_data)
     numOfWins = len([x for x in games_data if x['winner']=='GD'])
     
@@ -149,22 +186,37 @@ def getGeoStats(request):
     def numQuit():
         quit_count=0
         for x in games_data:
-            if x['quit']:
+            if x['quit'] and x['winner']=='JM':
                 quit_count+=1
 
         return quit_count
+    def bestStreak():
+        bestStreak=0
+        currStreak=0
+        if len(games_data)==1 and games_data[0]['winner']=='GD':
+            bestStreak=1
+            return bestStreak
+        for x in games_data:
+            if x['winner']=='GD':
+                currStreak+=1
+            else:
+                bestStreak=max([bestStreak, currStreak])
+                currStreak =0
+        return bestStreak
+
     response_data = {"data":{
         
         "numOfGames": numOfGames,
         "numOfWins":numOfWins,
-        "streak": checkStreak(),
-        "mostUsed":mostUsed(),
-        "aveDiff": getAveDiff(),
-        "maxPosDiff":maxPosDiff(),
-        "maxNegDiff":maxNegDiff(),
+        "currentStreak": checkStreak(),
+        "bestStreak": bestStreak(),
+        "mostUsedTeam":mostUsed(),
+        "averageDiff": getAveDiff(),
+        "maxPositiveDiff":maxPosDiff(),
+        "maxNegativeDiff":maxNegDiff(),
         "totalDiff":getTotalDiff(),
         "numQuit":numQuit(),
-        "games":reversed(games_data),
+        "games":lastTen_data,
     }}
     return Response(response_data, status=status.HTTP_200_OK)
 
