@@ -41,7 +41,7 @@ def getArchive(request):
     if len(games_data)==0:
         return Response({"data":{"message":"No games yet"}},status=status.HTTP_200_OK)
     response_data = {"data":{
-        "games": games_data,
+        "games": reversed(games_data),
         }}
     # return Response({"hello":"Hello world"})
     return Response(response_data,status=status.HTTP_200_OK)
