@@ -77,13 +77,7 @@ def getMichaelStats(request):
         for x in games_data:
             teams.append(x['details']['michaelTeam'])
         return teams
-    def checkStreak():
-        streak=0
-        for game in reversed(games_data):
-            if(game['winner']=='JM'):
-                streak+=1
-            else:
-                return streak
+   
     def mostUsed():
         return max(set(getTeams()), key=getTeams().count)
     def getDiffArray():
@@ -129,7 +123,7 @@ def getMichaelStats(request):
         
         "numOfGames": numOfGames,
         "numOfWins":numOfWins,
-        "currentStreak": checkStreak(),
+
         "bestStreak": bestStreak(),
         "mostUsedTeam":mostUsed(),
         "averageDiff": getAveDiff(),
@@ -158,13 +152,7 @@ def getGeoStats(request):
         for x in games_data:
             teams.append(x['details']['geoTeam'])
         return teams
-    def checkStreak():
-        streak=0
-        for game in reversed(games_data):
-            if(game['winner']=='GD'):
-                streak+=1
-            else:
-                return streak
+   
     def mostUsed():
         return max(set(getTeams()), key=getTeams().count)
     def getDiffArray():
@@ -208,7 +196,6 @@ def getGeoStats(request):
         
         "numOfGames": numOfGames,
         "numOfWins":numOfWins,
-        "currentStreak": checkStreak(),
         "bestStreak": bestStreak(),
         "mostUsedTeam":mostUsed(),
         "averageDiff": getAveDiff(),
