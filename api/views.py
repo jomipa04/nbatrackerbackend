@@ -8,6 +8,7 @@ from .serializers import  DetailsSerializer, GamesSerializer
 def getMe(request):
     games = Games.objects.all()
     games_data=GamesSerializer(games, many=True).data
+
     lastTen = games.order_by('-id')[:10]
     lastTen_data =GamesSerializer(lastTen, many=True).data
     if len(games_data)==0:
@@ -17,7 +18,9 @@ def getMe(request):
         streak=1
         itr=0
         rev_data = list(reversed(games_data))
+       
         for i in range(1, len(rev_data)):
+            print(rev_data[i]['winner'])
             if(rev_data[itr]['winner']==rev_data[i]['winner']):
                 streak+=1
             else:
@@ -25,6 +28,11 @@ def getMe(request):
                     "streak":streak,
                     "streakBy":rev_data[0]['winner']
                 }
+        return {
+                    "streak":streak,
+                    "streakBy":rev_data[0]['winner']
+                }
+        
     response_data = {"data":{
         "streakStat":checkStreak(),
         "numOfGames": numOfGames,
@@ -108,14 +116,17 @@ def getMichaelStats(request):
     def bestStreak():
         bestStreak=0
         currStreak=0
+        # current dapat napapagitnaan para magkaroon ng streak
         if len(games_data)==1 and games_data[0]['winner']=='JM':
             bestStreak=1
             return bestStreak
         for x in games_data:
             if x['winner']=='JM':
                 currStreak+=1
-            else:
-                bestStreak=max([bestStreak, currStreak])
+                print(currStreak)
+            elif x['winner']!='JM':
+                print(currStreak)
+                bestStreak=max([bestStreak, currStreak])         
                 currStreak =0
         return bestStreak
 

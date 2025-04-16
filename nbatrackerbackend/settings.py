@@ -132,3 +132,5 @@ CORS_ORIGIN_WHITELIST = [
 
     # other origins...
 ]
+
+CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding','content-type', 'accept', 'origin', 'authorization')
