@@ -1,0 +1,1 @@
+web: gunicorn nbatrackerbackend.wsgi --log-file -
